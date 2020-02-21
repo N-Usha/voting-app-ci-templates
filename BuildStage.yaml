@@ -1,0 +1,46 @@
+parameters:
+  name: ''
+  vmImageName: ''
+  imageRepository: ''
+  dockerfilePath: ''
+  dockerRegistryServiceConnection:''
+  tag:''
+
+stages:
+- stage: Build
+  displayName: Build stage
+  jobs:  
+  - job: Build
+    displayName: Build
+    pool:
+      vmImage: ${{ parameters.vmImageName}}
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry
+      inputs:
+        command: buildAndPush
+        repository: ${{ parameters.imageRepository}}
+        dockerfile: ${{ parameters.dockerfilePath}}
+        containerRegistry: ${{ parameters.dockerRegistryServiceConnection}}
+        tags: |
+          ${{ parameters.tag}}
+          
+    - upload: ${{ parameters.name }}/helm
+      artifact: ${{ parameters.name }}/helm
+
+  - job: Test
+    dependsOn: Build
+    displayName: Run tests
+    variables: { agent.disablelogplugin.TestResultLogPlugin: 'false' }
+    pool:
+      vmImage: ${{ parameters.vmImageName}}
+    steps:  
+    - task: ContainerStructureTest@0
+      displayName: 'Container Structure Test '
+      inputs:
+        dockerRegistryServiceConnection: ${{ parameters.dockerRegistryServiceConnection}}
+        repository: ${{ parameters.imageRepository}}
+        tag: ${{ parameters.tag}}
+        configFile: tests/FileExistenceTest.yml
+        testRunTitle: 'File Existence test'
+        failTaskOnFailedTests: false
