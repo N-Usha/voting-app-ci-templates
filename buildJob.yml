@@ -1,0 +1,26 @@
+parameters:
+  name: ''
+  vmImageName: ''
+  imageRepository: ''
+  dockerfilePath: ''
+  dockerRegistryServiceConnection: ''
+  tag: ''
+
+jobs:  
+- job: Build
+  displayName: Build
+  pool:
+    vmImage: ${{ parameters.vmImageName}}
+  steps:
+  - task: Docker@2
+    displayName: Build and push an image to container registry
+    inputs:
+      command: buildAndPush
+      repository: ${{ parameters.imageRepository}}
+      dockerfile: ${{ parameters.dockerfilePath}}
+      containerRegistry: ${{ parameters.dockerRegistryServiceConnection}}
+      tags: |
+        ${{ parameters.tag}}
+
+  - upload: ${{ parameters.name }}/helm
+    artifact: ${{ parameters.name }}/helm
