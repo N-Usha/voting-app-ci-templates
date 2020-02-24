@@ -1,4 +1,5 @@
 parameters:
+  name: ''
   vmImageName: ''
   imageRepository: ''
   dockerfilePath: ''
