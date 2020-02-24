@@ -3,8 +3,8 @@ parameters:
   vmImageName: ''
   imageRepository: ''
   dockerfilePath: ''
-  dockerRegistryServiceConnection:''
-  tag:''
+  dockerRegistryServiceConnection: ''
+  tag: ''
 
 stages:
 - stage: Build
