@@ -25,6 +25,9 @@ stages:
         tags: |
           ${{ parameters.tag}}
           
+    - task: WhiteSource Bolt@20
+      displayName: 'WhiteSource Bolt'
+          
     - upload: ${{ parameters.name }}/helm
       artifact: ${{ parameters.name }}/helm
 
